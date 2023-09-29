@@ -27,6 +27,7 @@ ChartJS.register(
 
 function App() {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [isLoading, setIsLoading] = useState(true);
   const chartOptions = {
     responsive: true,
     scales: {
@@ -78,10 +79,6 @@ function App() {
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const abb = hours > 12 ? "PM" : "AM";
-    // return `${hours}:${minutes < 10 ? "0" : ""}${minutes} ${abb}`;
     return date.toLocaleTimeString();
   };
 
@@ -124,10 +121,20 @@ function App() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if(chartData.datasets.length !== 0) {
+      setIsLoading(false);
+    }
+  }, [chartData]);
+
   return (
     <div className="h-screen">
-      <div className="max-h-full w-full flex flex-col justify-center items-center">
-        <Line options={chartOptions} data={chartData} />
+      <div className="max-h-full h-full w-full flex flex-col items-center justify-center">
+        {isLoading ? (
+          <div className="text-sm font-medium">Loading your data</div>
+        ) : (
+          <Line options={chartOptions} data={chartData} />
+        )}
       </div>
     </div>
   );
